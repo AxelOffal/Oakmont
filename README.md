@@ -14,32 +14,40 @@ eg. #this line gets the html code for the inputed link using the requests module
 
 3. When refering to a module created in another module that we made, note roughly what it does
 
-  eg. #this method collects price value from the RBA website
-      
+  eg.
+  
+     #this method collects price value from the RBA website
       scraper.getRBAInflation()
 
 4. multiple lines that are related to each other can be noted within the same comment, that is fine and works well
 
-  eg. #get the consumerIndex and monthlyIndicator values
-      
+eg. 
+
+      #get the consumerIndex and monthlyIndicator values
       consumerIndex = re.search("\d+\.\d+", consumerIndex).group()
-      
       monthlyIndicator = re.search("\d+\.\d+", monthlyIndicator).group()
 
-5. Comment any code that is not clear with its own dedicated line. A line of code is defined unclear if it refers to anything external or is processing inputs.
-   eg. print('this') 
-    the above doesn't require comments
-   eg. print(testing*graphics)
+6. Comment any code that is not clear with its own dedicated line. A line of code is defined unclear if it refers to anything external or is processing inputs.
+   eg.
+
+         print('this') 
+   the above doesn't require comments
+   eg.
+
+         print(testing*graphics)
    the above requires comments as it describes a operation and the base print.
    
-6. If possible try and note comments as much as possible to help decribe the process of the program.
-    Rule of thumb, over comment is better than under so even if its a simple method or line, commenting is recommended
+8. If possible try and note comments as much as possible to help decribe the process of the program.
+   Rule of thumb, over comment is better than under so even if its a simple method or line, commenting is recommended
 
-7. If you have described something previously with comments, you don't need to redescribe the same methods and can simplify
-   eg. #this method collects price value from the RBA website
-      \nscraper.getRBAInflation()
+9. If you have described something previously with comments, you don't need to redescribe the same methods and can simplify
+   eg.
+
+         #this method collects price value from the RBA website
+         scraper.getRBAInflation()
    And
-      #get RBA values
-      scraper.getRBAInflation()
+   
+         #get RBA values
+         scraper.getRBAInflation()
 
 If you have any issues with what is described above, talk to me (Andrew Still) about it and we can discuss changes.
