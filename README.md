@@ -8,8 +8,9 @@ note these do not need to be followed exactly as the examples describe, they are
 
 1. If you are using a module from another library, refer to what the module is doing
    
-eg. #this line gets the html code for the inputed link using the requests module
+eg. 
 
+      #this line gets the html code for the inputed link using the requests module
       requests.get(link)
 
 3. When refering to a module created in another module that we made, note roughly what it does
