@@ -1,34 +1,56 @@
 import scraper
-import re
+from selenium.webdriver.common.by import By
 
-#gets the price of Bannanas from coles
-def getColes():
-    #get the html info from coles using the getHtml method from the scraper module
-    html = scraper.getHtml('https://www.coles.com.au/product/fresh-bananas-approx.-180g-409499')
-    #find the script information from the page with a type of application/ld+json
-    data = html.find('script', type='application/ld+json')
-    #take that data and interpret it into a proper json format and get the information within offers and price
-    data = data.contents
-    #use the interpretJson method from scraper to get a nested list for use
-    result = scraper.interpretJson(data[0])
-    result = result['offers'][0]['price']
-    #return the price
-    return result
+#get the woolies price for bananas
+def getWooliesBanana():
+    #link to the woolies page on bananas
+    url = "https://www.woolworths.com.au/shop/productdetails/133211/cavendish-bananas"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
+    #return the internal HTML attribute of that element
+    data.get_attribute('innerHTML')
+    return data 
 
+#get the consumer price index and monthly index from the reserve bank of Australia site
 def getRBAInflation():
-    #get html info from the RBA website
-    html = scraper.getHtml('https://www.rba.gov.au/inflation-overview.html')
-    #find all p tag elements with the class 'landing-page-chart-statistic-value'
-    data = html.findAll('p', class_="landing-page-chart-statistic-value")
-    
-    #set consumerIndex and monthlyIndicator
-    consumerIndex = data[0].text
-    monthlyIndicator = data[1].text
+    #get the html data for the RBA website
+    url = "https://www.rba.gov.au/inflation-overview.html"
+    data = scraper.getHTML(url)
+    #find all entries with a class of 'landing-page-chart-statistic-value'
+    data = data.find_elements(By.CLASS_NAME, "landing-page-chart-statistic-value")
+    #set each value found to the respective named values below
+    ConsumerPriceIndex = data[0].text
+    MonthlyPriceIndex = data[1].text
+    #return them
+    return ConsumerPriceIndex, MonthlyPriceIndex
 
-    #get the consumerIndex and monthlyIndicator values
-    consumerIndex = re.search("\d+\.\d+", consumerIndex).group()
-    monthlyIndicator = re.search("\d+\.\d+", monthlyIndicator).group()
-    #return the consumer price index, and monthly indicator
-    return consumerIndex, monthlyIndicator
+#get the monthly costs of living for a family of 4 and 1 from the expatistan site
+def getExpantism():
+    #get the html data for the expatistan website
+    url = "https://www.expatistan.com/cost-of-living/country/australia"
+    data = scraper.getHTML(url)
+    #find all elements which use a span tag and have the class 'price'
+    data = data.find_elements(By.XPATH,'//span[@class="price"]')
+    #set each respective monthly cost to the result and return
+    monthlyCostFamilyOfFour = data[0].text
+    monthlyCostSinglePerson = data[1].text
+    return monthlyCostFamilyOfFour, monthlyCostSinglePerson
 
-print(getRBAInflation())
+#//li/label
+
+#gets the lowest and highest fuel price across australia
+def getFuelPrice():
+    #get the html data for australian fuel prices
+    url = "https://fuelprice.io/"
+    data = scraper.getHTML(url)
+    #find all elements that are a label contained within a li tag
+    data = data.find_elements(By.XPATH,'//li/label')
+    #set the results to there respective values
+    lowestprice = data[0].text
+    highestprice = data[1].text
+    #return the results
+    return lowestprice, highestprice 
+
+print(getFuelPrice())
