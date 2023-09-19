@@ -1,17 +1,6 @@
 import scraper
 from selenium.webdriver.common.by import By
-
-#get the woolies price for bananas
-def getWooliesBanana():
-    #link to the woolies page on bananas
-    url = "https://www.woolworths.com.au/shop/productdetails/133211/cavendish-bananas"
-    #get the html data for the page from the scraper module
-    data = scraper.getHTML(url)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
-    #return the internal HTML attribute of that element
-    data.get_attribute('innerHTML')
-    return data 
+import re 
 
 #get the consumer price index and monthly index from the reserve bank of Australia site
 def getRBAInflation():
@@ -53,4 +42,73 @@ def getFuelPrice():
     #return the results
     return lowestprice, highestprice 
 
-print(getFuelPrice())
+#woolies/coles lists
+#wonderwhite bread, royal gala apples 
+
+#get the woolies price for bananas
+def getWooliesBread():
+    #link to the woolies page on bananas
+    url = "https://www.woolworths.com.au/shop/productdetails/263669/wonder-white-bread-vitamins-minerals-sandwich"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    return data 
+
+#get the woolies price for bananas
+def getWooliesApples():
+    #link to the woolies page on bananas
+    url = "https://www.woolworths.com.au/shop/productdetails/155003/apple-royal-gala"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    return data 
+
+#get the woolies price for bananas
+def getWooliesBananas():
+    #link to the woolies page on bananas
+    url = "https://www.woolworths.com.au/shop/productdetails/133211/cavendish-bananas"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
+    #return the internal HTML attribute of that element
+    #data = data.get_attribute('innerHTML')
+    return data 
+
+#get the woolies price for bananas
+def getWooliesChicken():
+    #link to the woolies page on bananas
+    url = "https://www.woolworths.com.au/shop/productdetails/25734/woolworths-rspca-approved-chicken-breast-fillet"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    return data 
+
+#get the woolies price for bananas
+def getColesBread():
+    #link to the woolies page on bananas
+    url = "https://www.coles.com.au/product/wonder-white-bread-+-vitamins-and-mineral-700g-5795130"
+    #get the html data for the page from the scraper module
+    data = scraper.getHTML(url)
+    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    return data 
+
+def interpretPrice(inputs):
+    return float(re.search('[0-9]\.[0-9][0-9]', inputs).group())
+
+def interpretWeight(inputs):
+    return (re.search(' ([0-9]+.*)', inputs).group(1))
+
+print(getWooliesApples(),"\n", getWooliesBananas(),"\n", getWooliesBread(),"\n", getWooliesChicken())
