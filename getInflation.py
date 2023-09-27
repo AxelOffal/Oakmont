@@ -2,6 +2,14 @@ import scraper
 from selenium.webdriver.common.by import By
 import re 
 
+def interpretPrice(inputs):
+    return float(re.search('[0-9]+(\.[0-9][0-9])?', inputs).group())
+
+def interpretWeight(inputs):
+    return (re.search(' ([0-9]+.*)', inputs).group(1))
+
+
+#----------------
 #get the consumer price index and monthly index from the reserve bank of Australia site
 def getRBAInflation():
     #get the html data for the RBA website
@@ -15,8 +23,9 @@ def getRBAInflation():
     #return them
     return ConsumerPriceIndex, MonthlyPriceIndex
 
+#----------------
 #get the monthly costs of living for a family of 4 and 1 from the expatistan site
-def getExpantism():
+def getExpantismDailyCost():
     #get the html data for the expatistan website
     url = "https://www.expatistan.com/cost-of-living/country/australia"
     data = scraper.getHTML(url)
@@ -27,8 +36,24 @@ def getExpantism():
     monthlyCostSinglePerson = data[1].text
     return monthlyCostFamilyOfFour, monthlyCostSinglePerson
 
-#//li/label
-
+def getExpantismSectorPrices():
+    #get the html data for the expatistan website
+    url = "https://www.expatistan.com/cost-of-living/country/australia"
+    data = scraper.getHTML(url)
+    #find all elements which use a span tag and have the class 'price'
+    data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
+    
+    prices = {}
+    for entry in data:
+        entries = entry.find_elements(By.XPATH,'*')
+        if len(entries) > 2:
+            price = str(entries[2].text)
+            name = entries[1].text
+            prices[name] = interpretPrice(price)
+    return prices
+#----------------
+#currently broken, appears to be due to a change in the site which prevents scraping
+"""
 #gets the lowest and highest fuel price across australia
 def getFuelPrice():
     #get the html data for australian fuel prices
@@ -41,74 +66,142 @@ def getFuelPrice():
     highestprice = data[1].text
     #return the results
     return lowestprice, highestprice 
-
-#woolies/coles lists
-#wonderwhite bread, royal gala apples 
-
-#get the woolies price for bananas
-def getWooliesBread():
-    #link to the woolies page on bananas
-    url = "https://www.woolworths.com.au/shop/productdetails/263669/wonder-white-bread-vitamins-minerals-sandwich"
+"""
+#----------------  
+#gets the price data of any valid product on the woolies site
+def getWoolies(url):
     #get the html data for the page from the scraper module
     data = scraper.getHTML(url)
     #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
+    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
+    #takes out the price and the weight of the product
+    data = interpretPrice(data), interpretWeight(data)
     #return the internal HTML attribute of that element
-    data = data.get_attribute('innerHTML')
+    return data 
+
+#get the woolies price for bananas
+def getWooliesBread():
+    #link to the woolies page on bread
+    url = "https://www.woolworths.com.au/shop/productdetails/263669/wonder-white-bread-vitamins-minerals-sandwich"
+    #process with the getWoolies method to get the price data
+    data = getWoolies(url)
     return data 
 
 #get the woolies price for bananas
 def getWooliesApples():
-    #link to the woolies page on bananas
+    #link to the woolies page on Apples
     url = "https://www.woolworths.com.au/shop/productdetails/155003/apple-royal-gala"
-    #get the html data for the page from the scraper module
-    data = scraper.getHTML(url)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
-    #return the internal HTML attribute of that element
-    data = data.get_attribute('innerHTML')
+    #process with the getWoolies method to get the price data
+    data = getWoolies(url)
     return data 
 
 #get the woolies price for bananas
 def getWooliesBananas():
     #link to the woolies page on bananas
     url = "https://www.woolworths.com.au/shop/productdetails/133211/cavendish-bananas"
-    #get the html data for the page from the scraper module
-    data = scraper.getHTML(url)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
-    #return the internal HTML attribute of that element
-    #data = data.get_attribute('innerHTML')
+    #process with the getWoolies method to get the price data
+    data = getWoolies(url)
     return data 
 
-#get the woolies price for bananas
+#get the woolies price for chicken
 def getWooliesChicken():
-    #link to the woolies page on bananas
+    #link to the woolies page on chicken breast fillet
     url = "https://www.woolworths.com.au/shop/productdetails/25734/woolworths-rspca-approved-chicken-breast-fillet"
-    #get the html data for the page from the scraper module
-    data = scraper.getHTML(url)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice")
-    #return the internal HTML attribute of that element
-    data = data.get_attribute('innerHTML')
+    #process with the getWoolies method to get the price data
+    data = getWoolies(url)
     return data 
 
-#get the woolies price for bananas
-def getColesBread():
-    #link to the woolies page on bananas
-    url = "https://www.coles.com.au/product/wonder-white-bread-+-vitamins-and-mineral-700g-5795130"
+def getColes(url):
     #get the html data for the page from the scraper module
     data = scraper.getHTML(url)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
+    return data 
+
+#get the coles price for bread
+def getColesBread():
+    #link to the coles bread page
+    url = "https://www.coles.com.au/product/wonder-white-bread-+-vitamins-and-mineral-700g-5795130"
+    #process coles page with getColes method
+    data = getColes(url)
+    #find the element in the page with the class name 'price_calculation_method'
     data = data.find_element(By.CLASS_NAME, "price__calculation_method")
     #return the internal HTML attribute of that element
     data = data.get_attribute('innerHTML')
+    #takes out the price and the weight of the product
+    data = interpretPrice(data), interpretWeight(data)
     return data 
 
-def interpretPrice(inputs):
-    return float(re.search('[0-9]\.[0-9][0-9]', inputs).group())
+#get the coles price for chicken breast fillet
+def getColesChicken():
+    #link to the coles chicken breast fillet page
+    url = "https://www.coles.com.au/product/coles-rspca-approved-chicken-breast-fillets-large-pack-approx.-1.4kg-2263179"
+    #process coles page with getColes method
+    data = getColes(url)
+    #find the element in the page with the class name 'price_calculation_method'
+    data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    #takes out the price and the weight of the product
+    data = interpretPrice(data), interpretWeight(data)
+    return data 
 
-def interpretWeight(inputs):
-    return (re.search(' ([0-9]+.*)', inputs).group(1))
+#get the coles price for Apples
+def getColesApples():
+    #link to the coles Apples page
+    url = "https://www.coles.com.au/product/coles-royal-gala-apples-loose-approx.-160g-each-5226000"
+    #process coles page with getColes method
+    data = getColes(url)
+    #find the element in the page with the class name 'price_value'
+    data = data.find_element(By.CLASS_NAME, "price__value")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    #takes out the price per item saved as a tuple
+    data = interpretPrice(data), '1EA'
+    return data 
 
-print(getWooliesApples(),"\n", getWooliesBananas(),"\n", getWooliesBread(),"\n", getWooliesChicken())
+#get the coles price for bananas
+def getColesBananas():
+    #link to the coles bananas page
+    url = "https://www.coles.com.au/product/fresh-bananas-approx.-180g-each-409499"
+    #process coles page with getColes method
+    data = getColes(url)
+    #find the element in the page with the class name 'price_value'
+    data = data.find_element(By.CLASS_NAME, "price__value")
+    #return the internal HTML attribute of that element
+    data = data.get_attribute('innerHTML')
+    #takes out the price per item saved as a tuple
+    data = interpretPrice(data), '1EA'
+    return data 
+
+#----------------
+#comparison single-city
+def getExpantism():
+    #get the html data for the expatistan website
+    url = "https://www.expatistan.com/cost-of-living/country/australia"
+    data = scraper.getHTML(url)
+    #find all elements within the table with the class name 'comparison single-city'
+    data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
+    
+    #create a price dictionary
+    prices = []
+    #for each entry in our data
+    for entry in data:
+        #get all children of our entry
+        entries = entry.find_elements(By.XPATH,'*')
+        #if there are more than two children entries
+        if len(entries) > 2:
+            #set price to the value at index 2
+            price = str(entries[2].text)
+            #set the name to the values at index 1
+            name = entries[1].text
+            #add a dictionary entry to prices with the respective name and price
+            prices.append(name, interpretPrice(price))
+    #return our sector prices
+    return prices
+
+#test = [getColesApples(), getColesBananas(), getColesBread(), getColesChicken()]
+#test2 = [getWooliesApples(),getWooliesBananas(),getWooliesBread(),getWooliesChicken()]
+test = getExpantismSectorPrices()
+for i in test:
+    print(i, test[i])
+#print(getColesApples())
+#9-59
