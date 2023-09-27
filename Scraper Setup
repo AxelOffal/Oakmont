@@ -1,0 +1,9 @@
+Scraper Setup
+
+To use the scraper and getInflation modules you will need to first install python to your device with pip setup for your device.
+From there you need to run the following pip commands into your terminal to setup the required libaries for the modules to opperate.
+
+pip install webdriver_manager
+pip install selenium
+
+Once each are installed your should be able to run each respective module.
