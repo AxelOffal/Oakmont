@@ -3,9 +3,15 @@ from selenium.webdriver.common.by import By
 import re 
 
 def interpretPrice(inputs):
-    return float(re.search('[0-9]+(\.[0-9][0-9])?', inputs).group())
+    #remove all commas from any numbers 
+    inputs = inputs.replace(',','')
+    #find the number from inside of the given string
+    result = float(re.search('[0-9]+(\.[0-9][0-9])?', inputs).group())
+    #return the price result
+    return result
 
 def interpretWeight(inputs):
+    #find the weight/distribution of items and return
     return (re.search(' ([0-9]+.*)', inputs).group(1))
 
 
@@ -17,39 +23,49 @@ def getRBAInflation():
     data = scraper.getHTML(url)
     #find all entries with a class of 'landing-page-chart-statistic-value'
     data = data.find_elements(By.CLASS_NAME, "landing-page-chart-statistic-value")
-    #set each value found to the respective named values below
-    ConsumerPriceIndex = data[0].text
-    MonthlyPriceIndex = data[1].text
+    #set each value found to the respective named values below 
+    #additionally refine the values to be the proper price values
+    ConsumerPriceIndex = interpretPrice(data[0].text)
+    MonthlyPriceIndex = interpretPrice(data[1].text)
     #return them
     return ConsumerPriceIndex, MonthlyPriceIndex
 
 #----------------
 #get the monthly costs of living for a family of 4 and 1 from the expatistan site
-def getExpantismDailyCost():
+def getExpantismMonthlyCost():
     #get the html data for the expatistan website
     url = "https://www.expatistan.com/cost-of-living/country/australia"
     data = scraper.getHTML(url)
     #find all elements which use a span tag and have the class 'price'
     data = data.find_elements(By.XPATH,'//span[@class="price"]')
     #set each respective monthly cost to the result and return
-    monthlyCostFamilyOfFour = data[0].text
-    monthlyCostSinglePerson = data[1].text
+    monthlyCostFamilyOfFour = interpretPrice(data[0].text)
+    monthlyCostSinglePerson = interpretPrice(data[1].text)
     return monthlyCostFamilyOfFour, monthlyCostSinglePerson
 
+#comparison single-city
 def getExpantismSectorPrices():
     #get the html data for the expatistan website
     url = "https://www.expatistan.com/cost-of-living/country/australia"
     data = scraper.getHTML(url)
-    #find all elements which use a span tag and have the class 'price'
+    #find all elements within the table with the class name 'comparison single-city'
     data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
     
-    prices = {}
+    #create a price dictionary
+    prices = []
+    #for each entry in our data
     for entry in data:
+        #get all children of our entry
         entries = entry.find_elements(By.XPATH,'*')
+        #if there are more than two children entries
         if len(entries) > 2:
+            #set price to the value at index 2
             price = str(entries[2].text)
+            #set the name to the values at index 1
             name = entries[1].text
-            prices[name] = interpretPrice(price)
+            #add a dictionary entry to prices with the respective name and price
+            prices.append([name, interpretPrice(price)])
+    #return our sector prices
     return prices
 #----------------
 #currently broken, appears to be due to a change in the site which prevents scraping
@@ -171,37 +187,12 @@ def getColesBananas():
     #takes out the price per item saved as a tuple
     data = interpretPrice(data), '1EA'
     return data 
-
 #----------------
-#comparison single-city
-def getExpantism():
-    #get the html data for the expatistan website
-    url = "https://www.expatistan.com/cost-of-living/country/australia"
-    data = scraper.getHTML(url)
-    #find all elements within the table with the class name 'comparison single-city'
-    data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
-    
-    #create a price dictionary
-    prices = []
-    #for each entry in our data
-    for entry in data:
-        #get all children of our entry
-        entries = entry.find_elements(By.XPATH,'*')
-        #if there are more than two children entries
-        if len(entries) > 2:
-            #set price to the value at index 2
-            price = str(entries[2].text)
-            #set the name to the values at index 1
-            name = entries[1].text
-            #add a dictionary entry to prices with the respective name and price
-            prices.append(name, interpretPrice(price))
-    #return our sector prices
-    return prices
+#woolies and coles 1-8
+#data = [getWooliesApples(),getWooliesBananas(),getWooliesChicken(),getWooliesBread(), getColesBread(), getColesApples(), getColesBananas(), getColesChicken()]
+#data = getExpantismSectorPrices()
+data = [getRBAInflation(),getExpantismMonthlyCost()]
+for i in data:
+    print(i)
 
-#test = [getColesApples(), getColesBananas(), getColesBread(), getColesChicken()]
-#test2 = [getWooliesApples(),getWooliesBananas(),getWooliesBread(),getWooliesChicken()]
-test = getExpantismSectorPrices()
-for i in test:
-    print(i, test[i])
-#print(getColesApples())
-#9-59
+#expantism 9->
