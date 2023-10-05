@@ -1,13 +1,13 @@
 library(readabs)
 library(tidyverse)
 library(DBI)
-library(RMySQL)
+library(RMariaDB)
 library(readxl)
 
 getPastCpi<- function() {
   cpi <- read_abs(series_id="A128478317T")
   cpi <- cpi %>%
-    select(date, value)
+  select(date, value)
   return(cpi)
 }
 getWeights <- function() {
@@ -22,15 +22,16 @@ getWeights <- function() {
 
 update_db <- function(cpi, weights) {
   # Establish a connection
-  con <- dbConnect(RMySQL::MySQL(), 
+  con <- dbConnect(RMariaDB::MariaDB(), 
                    host="inflationdb.mysql.database.azure.com", 
                    user="Oakmont", 
                    password="StrattonStonks741", 
-                   dbname="testdb")
+                   dbname="oakmont_padb")
   
   # Insert the data
   dbWriteTable(con, "abs_inflation", cpi, append=FALSE, overwrite=TRUE, row.names=FALSE)
-  dbWriteTable(con, "abs_Weights", weights, append=FALSE, overwrite=TRUE, row.names=FALSE)
+  #dbSendStatement(con, "UPDATE abs_inflation SET date = STR_TO_DATE(date, '%YYYY-%mm-%dd')")
+  dbWriteTable(con, "abs_weights", weights, append=FALSE, overwrite=TRUE, row.names=FALSE)
   # Close the connection
   dbDisconnect(con)
 }
