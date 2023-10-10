@@ -1,6 +1,7 @@
 import scraper
 from selenium.webdriver.common.by import By
 import re 
+from pprint import pprint
 
 def interpretPrice(inputs):
     #remove all commas from any numbers 
@@ -87,7 +88,7 @@ def getFuelPrice():
 #gets the price data of any valid product on the woolies site
 def getWoolies(url):
     #get the html data for the page from the scraper module
-    data = scraper.getHTML(url)
+    data = scraper.getHTML(url, False)
     #find the element in the page with the class name 'shelfProductTile-cupPrice'
     data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
     #takes out the price and the weight of the product
@@ -188,11 +189,40 @@ def getColesBananas():
     data = interpretPrice(data), '1EA'
     return data 
 #----------------
-#woolies and coles 1-8
-#data = [getWooliesApples(),getWooliesBananas(),getWooliesChicken(),getWooliesBread(), getColesBread(), getColesApples(), getColesBananas(), getColesChicken()]
-#data = getExpantismSectorPrices()
-data = [getRBAInflation(),getExpantismMonthlyCost()]
-for i in data:
-    print(i)
+#get average Australian price for petroleum (car fuel)
+def getAIPFuel():
+    #Link for the australian insitute of Petroleum
+    url = "http://www.aip.com.au/pricing/national-retail-petrol-prices"
+    #use the scraper to get the html data
+    data = scraper.getHTML(url)
+    #get the table data of the National Australian average price
+    data = data.find_element(By.XPATH,'//table/tbody/tr[3]/td[2]')
+    #get the string value
+    data = data.get_attribute('innerHTML')
+    #Convert to a float
+    data = float(data)
+    #return the final data
+    return data
+#-----
+#get the average index values representing housing prices
+def getCoreLogic():
+    #Link for CoreLogic Housing prices
+    url = "https://www.corelogic.com.au/our-data/corelogic-indices"
+    #use the scraper to get the html data
+    data = scraper.getHTML(url)
+    #get the table data of the National Australian Housing indexs
+    data = data.find_elements(By.CLASS_NAME, 'graph-row')
+    #set a temporary list
+    temp = []
+    #for each row of data
+    for i in data:
+        #find all the columns inside of the row
+        i = i.find_elements(By.TAG_NAME, 'div')
+        #take the entries at 0 and 3 and append those as a tuple to temp
+        temp.append((i[0].text,i[3].text))
+    #replace temp with data
+    data = temp
+    #return the formated data
+    return data
 
-#expantism 9->
+print(getWooliesChicken())
