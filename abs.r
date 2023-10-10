@@ -17,6 +17,7 @@ getWeights <- function() {
     select(3,6) %>%
     na.omit()
   colnames(weights) <- c("expenditure_class","weights")
+  weights$weights <- weights$weights / 100  # This line is added to divide weights by 100
   return(weights)
 }
 

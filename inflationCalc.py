@@ -92,7 +92,7 @@ cursor.close()
 total_weight = sum(weight for _, weight in class_weights)
 
 # Rescale the weights so they add up to 1
-rescaled_weights = [(e_class, weight / total_weight) for e_class, weight in class_weights]
+rescaled_weights = [(e_class, (weight / total_weight)/100) for e_class, weight in class_weights]
 
 # Print out the rescaled weights for verification
 for e_class, weight in rescaled_weights:
@@ -110,7 +110,7 @@ for (e_class, avg_inflation) in class_inflation_list:
 
 # Calculate the sum of weighted inflations to get the overall inflation
 overall_inflation = sum(inflation for _, inflation in weighted_inflations)
-print(f"Overall Inflation: {overall_inflation:.4f}")
+print(f"Overall Inflation: {overall_inflation:.6f}")
 
 # Create a cursor to execute queries
 cursor = cnx.cursor()
@@ -136,5 +136,6 @@ if past_cpi_value != 0:  # Add a check to avoid division by zero
 else:
     print("Past CPI value is zero, cannot calculate inflation.")
 final_inflation = cpi_inflation + (overall_inflation*4)
+print(f"Final estimation = {final_inflation*100:.5F}%")
 cursor.close()
 cnx.close()
