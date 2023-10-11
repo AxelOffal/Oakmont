@@ -22,8 +22,16 @@ def getRBAInflation():
     #get the html data for the RBA website
     url = "https://www.rba.gov.au/inflation-overview.html"
     data = scraper.getHTML(url)
-    #find all entries with a class of 'landing-page-chart-statistic-value'
-    data = data.find_elements(By.CLASS_NAME, "landing-page-chart-statistic-value")
+
+    #attempt to find elements in page
+    try:
+        #find all entries with a class of 'landing-page-chart-statistic-value'
+        data = data.find_elements(By.CLASS_NAME, "landing-page-chart-statistic-value")
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #set each value found to the respective named values below 
     #additionally refine the values to be the proper price values
     ConsumerPriceIndex = interpretPrice(data[0].text)
@@ -37,8 +45,16 @@ def getExpantismMonthlyCost():
     #get the html data for the expatistan website
     url = "https://www.expatistan.com/cost-of-living/country/australia"
     data = scraper.getHTML(url)
-    #find all elements which use a span tag and have the class 'price'
-    data = data.find_elements(By.XPATH,'//span[@class="price"]')
+
+    #attempt to find elements in page
+    try:
+        #find all elements which use a span tag and have the class 'price'
+        data = data.find_elements(By.XPATH,'//span[@class="price"]')
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #set each respective monthly cost to the result and return
     monthlyCostFamilyOfFour = interpretPrice(data[0].text)
     monthlyCostSinglePerson = interpretPrice(data[1].text)
@@ -49,15 +65,32 @@ def getExpantismSectorPrices():
     #get the html data for the expatistan website
     url = "https://www.expatistan.com/cost-of-living/country/australia"
     data = scraper.getHTML(url)
-    #find all elements within the table with the class name 'comparison single-city'
-    data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
+
+    #attempt to find elements in page
+    try:
+        #find all elements within the table with the class name 'comparison single-city'
+        data = data.find_elements(By.XPATH,'//table[@class="comparison single-city"]/tbody/tr')
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     
     #create a price dictionary
     prices = []
     #for each entry in our data
     for entry in data:
-        #get all children of our entry
-        entries = entry.find_elements(By.XPATH,'*')
+
+        #attempt to find sub element data
+        try:
+            #get all children of our entry
+            entries = entry.find_elements(By.XPATH,'*')
+        #if we can't find the element
+        except:
+            #raise a SubElementDataNotFound Exception
+            raise Exception('SubElementDataNotFound')
+
+        
         #if there are more than two children entries
         if len(entries) > 2:
             #set price to the value at index 2
@@ -89,8 +122,15 @@ def getFuelPrice():
 def getWoolies(url):
     #get the html data for the page from the scraper module
     data = scraper.getHTML(url, False)
-    #find the element in the page with the class name 'shelfProductTile-cupPrice'
-    data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
+    #attempt to find elements in page
+    try:
+        #find the element in the page with the class name 'shelfProductTile-cupPrice'
+        data = data.find_element(By.CLASS_NAME, "shelfProductTile-cupPrice").text
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #takes out the price and the weight of the product
     data = interpretPrice(data), interpretWeight(data)
     #return the internal HTML attribute of that element
@@ -139,8 +179,15 @@ def getColesBread():
     url = "https://www.coles.com.au/product/wonder-white-bread-+-vitamins-and-mineral-700g-5795130"
     #process coles page with getColes method
     data = getColes(url)
-    #find the element in the page with the class name 'price_calculation_method'
-    data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #attempt to find elements in page
+    try:
+        #find the element in the page with the class name 'price_calculation_method'
+        data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #return the internal HTML attribute of that element
     data = data.get_attribute('innerHTML')
     #takes out the price and the weight of the product
@@ -153,8 +200,15 @@ def getColesChicken():
     url = "https://www.coles.com.au/product/coles-rspca-approved-chicken-breast-fillets-large-pack-approx.-1.4kg-2263179"
     #process coles page with getColes method
     data = getColes(url)
-    #find the element in the page with the class name 'price_calculation_method'
-    data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #attempt to find elements in page
+    try:
+        #find the element in the page with the class name 'price_calculation_method'
+        data = data.find_element(By.CLASS_NAME, "price__calculation_method")
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #return the internal HTML attribute of that element
     data = data.get_attribute('innerHTML')
     #takes out the price and the weight of the product
@@ -167,8 +221,15 @@ def getColesApples():
     url = "https://www.coles.com.au/product/coles-royal-gala-apples-loose-approx.-160g-each-5226000"
     #process coles page with getColes method
     data = getColes(url)
-    #find the element in the page with the class name 'price_value'
-    data = data.find_element(By.CLASS_NAME, "price__value")
+    #attempt to find elements in page
+    try:
+        #find the element in the page with the class name 'price_value'
+        data = data.find_element(By.CLASS_NAME, "price__value")
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #return the internal HTML attribute of that element
     data = data.get_attribute('innerHTML')
     #takes out the price per item saved as a tuple
@@ -181,8 +242,15 @@ def getColesBananas():
     url = "https://www.coles.com.au/product/fresh-bananas-approx.-180g-each-409499"
     #process coles page with getColes method
     data = getColes(url)
-    #find the element in the page with the class name 'price_value'
-    data = data.find_element(By.CLASS_NAME, "price__value")
+    #attempt to find elements in page
+    try:
+        #find the element in the page with the class name 'price_value'
+        data = data.find_element(By.CLASS_NAME, "price__value")
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #return the internal HTML attribute of that element
     data = data.get_attribute('innerHTML')
     #takes out the price per item saved as a tuple
@@ -195,8 +263,15 @@ def getAIPFuel():
     url = "http://www.aip.com.au/pricing/national-retail-petrol-prices"
     #use the scraper to get the html data
     data = scraper.getHTML(url)
-    #get the table data of the National Australian average price
-    data = data.find_element(By.XPATH,'//table/tbody/tr[3]/td[2]')
+    #attempt to find elements in page
+    try:
+        #get the table data of the National Australian average price
+        data = data.find_element(By.XPATH,'//table/tbody/tr[3]/td[2]')
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #get the string value
     data = data.get_attribute('innerHTML')
     #Convert to a float
@@ -210,14 +285,29 @@ def getCoreLogic():
     url = "https://www.corelogic.com.au/our-data/corelogic-indices"
     #use the scraper to get the html data
     data = scraper.getHTML(url)
-    #get the table data of the National Australian Housing indexs
-    data = data.find_elements(By.CLASS_NAME, 'graph-row')
+    #attempt to find elements in page
+    try:
+        #get the table data of the National Australian Housing indexs
+        data = data.find_elements(By.CLASS_NAME, 'graph-row')
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    
     #set a temporary list
     temp = []
     #for each row of data
     for i in data:
-        #find all the columns inside of the row
-        i = i.find_elements(By.TAG_NAME, 'div')
+
+        #attempt to find sub elements
+        try:
+            #find all the columns inside of the row
+            i = i.find_elements(By.TAG_NAME, 'div')
+        #if we can't find the element
+        except:
+            #raise a SubElementDataNotFound Exception
+            raise Exception('SubElementDataNotFound')
+
         #take the entries at 0 and 3 and append those as a tuple to temp
         temp.append((i[0].text,i[3].text))
     #replace temp with data
@@ -225,4 +315,43 @@ def getCoreLogic():
     #return the formated data
     return data
 
-print(getWooliesChicken())
+#get the price for a bottle of Jack daniels
+def getAlcoholDaniels():
+    url = "https://www.mybottleshop.au/jack-daniels-1907-white-label-heritage-bottle-700ml"
+    data = scraper.getHTML(url)
+    #attempt to find elements in page
+    try:
+        #get the item price
+        data = data.find_element(By.CLASS_NAME,'price').text
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    #interpret the price data
+    data = interpretPrice(data)
+    #return the drink price
+    return data
+    
+#get the pricec for an 18 case of asahi
+def getAlcoholAsahi():
+    url = "https://www.mybottleshop.au/asahi-super-dry-black-bottle-18x334ml-bottles"
+    data = scraper.getHTML(url)
+    #attempt to find elements in page
+    try:
+        #get the item price
+        data = data.find_element(By.CLASS_NAME,'price').text
+    #if we can't find the element
+    except:
+        #raise a DataNotFound Exception
+        raise Exception('DataNotFound')
+    #interpret the price data
+    data = interpretPrice(data)
+    #return the drink price
+    return data
+
+print(getAlcoholAsahi(), getAlcoholDaniels())
+"""
+list = [getAIPFuel(), getColesApples(), getColesChicken(), getExpantismSectorPrices()]
+for i in list:
+    print(i)
+    """
