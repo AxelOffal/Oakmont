@@ -12,13 +12,7 @@ driver = webdriver.Chrome(options=options,service=Service(ChromeDriverManager().
 #if there is not an appropriate chrome driver defined for the driver above, the
 #Service(ChromeDriverManager().install()) method will create one for use
 
-def getHTML(url, headless = True):
-    #if headless is turned off redefine the driver with the headless feature turned off
-    if not headless:
-        options = webdriver.ChromeOptions()
-        options.headless = False
-        driver = webdriver.Chrome(options=options,service=Service(ChromeDriverManager().install()))
-    
+def getHTML(url):
     #get the html information from the inputed url and load it with chrome
     driver.get(url)
     #wait for a small amount of time to let the site load
