@@ -1,6 +1,21 @@
-# Oakmont
+# Oakmont Inflation Prediction application/site
 
-Commenting scheme
+The Oakmont Inflation Calculator is a program that scrapes and calculates data points over a variety of sites to simulate the rate of change for inflation within the Australian Economy. The calculator takes data points over different points in time, storing them within a host database which is then processed for use. The findings are then taken and hosted over a site that demonstrates the findings of the calculator in a clear-to-understand format. 
+
+ 
+
+# How it works? 
+
+The calculator works by taking data points from a list of sites; this being price data and inflation statistics regarding different economic sectors within Australia. This data is then added to a database that manages the data and splits it into two tables, the product table (used to define the item) and the price table (used to define the price or values of specific points at specific times).  
+
+Once the data is collected, the individual points of data are grouped with entries of the same item type and used to create an item expenditure class. This class refers to the change of the statistic over time, created by directly measuring its change over time. These items are then weighted and combined to create a subgroup expenditure class representing the change in a specific item type. 
+
+A good example would be bread. This item class would be defined within the subgroup class of baked goods. Bread would make up a certain percentage of this group and be applied as a single number. This is managed for all items within the database for all subgroups, we use the Australian Bureau of Statistics expenditure classes and sub-expenditure classes to help define these groupings and weights. These processed subclasses are weighted again within larger class groupings and used to define larger sectors of the Australian Economy. Finally, these groupings are weighted a final time and combined to create a singular value representing a rate of change for inflation within the Australian Economy. 
+
+All these steps are managed by an automation controller, which when finished processing this statistic sends the result to our website for use. 
+
+
+# Commenting scheme
 
 When commenting the project please refer to the following requirements for all coding
 
