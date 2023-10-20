@@ -105,25 +105,6 @@ def getExpantismSectorPrices():
     # return our sector prices
     return prices
 
-
-# ----------------
-# currently broken, appears to be due to a change in the site which prevents scraping
-"""
-#gets the lowest and highest fuel price across australia
-def getFuelPrice():
-    #get the html data for australian fuel prices
-    url = "https://fuelprice.io/"
-    data = scraper.getHTML(url)
-    #find all elements that are a label contained within a li tag
-    data = data.find_elements(By.XPATH,'//li/label')
-    #set the results to there respective values
-    lowestprice = data[0].text
-    highestprice = data[1].text
-    #return the results
-    return lowestprice, highestprice 
-"""
-
-
 # ----------------
 # gets the price data of any valid product on the woolies site
 def getWoolies(url):
@@ -142,6 +123,9 @@ def getWoolies(url):
     urlReturn = url
     # takes out the price and the weight of the product
     data = interpretPrice(data), interpretWeight(data)
+    #check that a float was gotten from the site data
+    if type(data[0]) != float:
+        raise Exception("DataNotFound")
     # return the internal HTML attribute of that element
     return data, urlReturn
 
@@ -208,6 +192,9 @@ def getColesBread():
     data = data.get_attribute("innerHTML")
     # takes out the price and the weight of the product
     data = interpretPrice(data), interpretWeight(data)
+    #check that a float was gotten from the site data
+    if type(data[0]) != float:
+        raise Exception("DataNotFound")
     return data, urlReturn
 
 
@@ -230,6 +217,9 @@ def getColesChicken():
     data = data.get_attribute("innerHTML")
     # takes out the price and the weight of the product
     data = interpretPrice(data), interpretWeight(data)
+    #check that a float was gotten from the site data
+    if type(data[0]) != float:
+        raise Exception("DataNotFound")
     return data, urlReturn
 
 
@@ -252,6 +242,9 @@ def getColesApples():
     data = data.get_attribute("innerHTML")
     # takes out the price per item saved as a tuple
     data = interpretPrice(data), "1EA"
+    #check that a float was gotten from the site data
+    if type(data[0]) != float:
+        raise Exception("DataNotFound")
     return data, urlReturn
 
 
@@ -274,6 +267,9 @@ def getColesBananas():
     data = data.get_attribute("innerHTML")
     # takes out the price per item saved as a tuple
     data = interpretPrice(data), "1EA"
+    #check that a float was gotten from the site data
+    if type(data[0]) != float:
+        raise Exception("DataNotFound")
     return data, urlReturn
 
 
@@ -372,3 +368,5 @@ def getAlcoholAsahi():
     data = interpretPrice(data)
     # return the drink price
     return data
+
+getWooliesChicken()
