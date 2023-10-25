@@ -27,12 +27,32 @@ def fetch_product_data(db, e_class):
     return db.execute_query(query, (e_class,))
 
 
-def fetch_price(db, productID, order):
-    query = f"SELECT Price_ID, price FROM prices WHERE productID = %s ORDER BY timestamp {order} LIMIT 1"
-    result = db.execute_query(query, (productID,))
-    
-    # Check if a result was found and return the tuple (Price_ID, price) or None if no result
-    return (result[0][0], result[0][1]) if result else None
+def fetch_prices(db, productID, month, year):
+    # This query fetches the first and last prices for a given product in a specified month and year
+    query = """
+    SELECT Price_ID, price, timestamp
+    FROM prices
+    WHERE productID = %s
+    AND MONTH(timestamp) = %s AND YEAR(timestamp) = %s
+    ORDER BY timestamp ASC
+    """
+
+    results = db.execute_query(query, (productID, month, year))
+    print(results)
+    # If no results are found, return None
+    if not results:
+        return None
+
+    # If there's only one result, then it's both the first and last price
+    if len(results) == 1:
+        return None
+
+    # If there's more than one result, then the first is the earliest and the last is the latest price
+    first_price_id, first_price, _ = results[0]
+    last_price_id, last_price, _ = results[-1]
+    print(f"First Price ID: {first_price_id}, First Price: {first_price}, Last Price ID: {last_price_id}, Last Price: {last_price}")
+
+    return (first_price_id, first_price), (last_price_id, last_price)
 
 
 def fetch_class_weights(db, class_inflation_list):
@@ -41,7 +61,7 @@ def fetch_class_weights(db, class_inflation_list):
         query = "SELECT weights FROM abs_weights WHERE expenditure_class = %s"
         weight = db.execute_query(query, (e_class,))
         if weight:
-            class_weights.append((e_class, weight[0]))
+            class_weights.append((e_class, weight[0][0]))
     return class_weights
 
 def rescale_weights(class_weights):
@@ -70,7 +90,7 @@ def fetch_cpi_data(db):
     
     return (latest_cpi_date, latest_cpi_value, past_cpi_date, past_cpi_value)
 
-def process_class(db, e_class):
+def process_class(db, e_class, month, year):
     print(f"Processing products of class: {e_class}")
 
     inflation_sum = 0
@@ -80,16 +100,12 @@ def process_class(db, e_class):
 
     for productID, names in products:
         
-        result_latest = fetch_price(db, productID, "DESC")
-        result_past = fetch_price(db, productID, "ASC")
-        
-        # Check if either result is None, or if the price IDs are the same
-        if not result_latest or not result_past or result_latest[0] == result_past[0]:
+        result = fetch_prices(db, productID, month, year)
+        if not result:
             print(f"No valid price data found for product {productID} ({names}).")
-            continue  # Skip to the next iteration
-    
-        latest_price_id, latest_price = result_latest
-        past_price_id, past_price = result_past
+            continue
+        # Unpack the results into separate variables
+        (past_price_id, past_price), (latest_price_id, latest_price) = result
         
         if past_price != 0:
             inflation = (latest_price - past_price) / past_price
@@ -99,25 +115,29 @@ def process_class(db, e_class):
         else:
             print("Past price is zero, cannot calculate inflation.")
 
-    avg_inflation = None
+    avg_inflation = 0
     if product_count > 0:
         avg_inflation = inflation_sum / product_count
         print(f"Average inflation for class {e_class}: {avg_inflation * 100:.2f}%")
     else:
         print(f"No valid inflation data available for class {e_class}.")
 
-    return (e_class, avg_inflation) if avg_inflation else None
+    return (e_class, avg_inflation)
 
 
 def main():
     db = Database(user="Oakmont", password="StrattonStonks741", host="inflationdb.mysql.database.azure.com", database="oakmont_padb")
-
+    
+    latest_cpi_date, latest_cpi_value, past_cpi_date, past_cpi_value = fetch_cpi_data(db)
+    #current_date = datetime.strptime(latest_cpi_date, '%Y-%m-%d %H:%M:%S')
+    current_month = latest_cpi_date.month + 1 
+    current_year = latest_cpi_date.year
+    print(f"Latest Month: {current_month}, Latest Year: {current_year}")
     all_classes = fetch_unique_classes(db)
     # Iterate through classes and process data
     class_inflation_list = []
     for e_class in all_classes:
-        class_inflation_list.append(process_class(db, e_class[0]))
-    print("break")
+        class_inflation_list.append(process_class(db, e_class[0], current_month, current_year))
     class_weights = fetch_class_weights(db, class_inflation_list)
     
     rescaled_weights = rescale_weights(class_weights)
@@ -127,7 +147,7 @@ def main():
     overall_inflation = sum(inflation for _, inflation in weighted_inflations)
     print(f"Overall Inflation: {overall_inflation:.6f}")
     
-    latest_cpi_date, latest_cpi_value, past_cpi_date, past_cpi_value = fetch_cpi_data(db)
+    
 
     # Now you can use these variables in your main function
     print(f"Latest CPI value: {latest_cpi_value} at {latest_cpi_date}")
