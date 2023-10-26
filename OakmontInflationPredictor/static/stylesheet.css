@@ -1,0 +1,280 @@
+.nav {
+    background-color: black;
+    position: fixed;
+    width: 100%;
+    /* Match the size of the screen */
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    /* Space between logo/title and links */
+    align-items: center;
+    /* Center vertically */
+    padding: 0 10px;
+    /* Add horizontal padding */
+    height: 50px;
+    /* Set the height of the navbar */
+}
+
+.Oakmont-Logo {
+    height: 50px;
+    /* Set the logo height equal to navbar height */
+    width: 50px;
+}
+
+.heading {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 20px;
+    padding-left: 20px;
+    color: white;
+    /* Text color white */
+    margin-right: 10px;
+    /* Add spacing to the right of the title */
+    line-height: 50px;
+    /* Vertically center the heading within the navbar */
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    /* Display links horizontally */
+    align-items: center;
+    /* Center links vertically within the navbar */
+    margin-left: auto;
+    /* Push links to the right */
+}
+html {
+    scroll-behavior: smooth;
+}
+
+.nav-links li {
+    margin-right: 10px;
+    /* Add margin between links */
+}
+
+.active {
+    display: inline;
+    padding: 12px 25px;
+    border: 1px solid #000;
+    background-color: #484848;
+    transition: all 200ms ease;
+    color: #ffffff;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 20px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 1px 1px #000;
+    text-transform: uppercase;
+}
+
+.dataButton {
+    display: inline;
+    padding: 12px 25px;
+    border: 1px solid #000;
+    background-color: #484848;
+    transition: all 200ms ease;
+    color: #ffffff;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 20px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 1px 1px #000;
+    text-transform: uppercase;
+}
+
+.sourcesButton {
+    display: inline;
+    padding: 12px 25px;
+    border: 1px solid #000;
+    background-color: #484848;
+    transition: all 200ms ease;
+    color: #ffffff;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 20px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 1px 1px #000;
+    text-transform: uppercase;
+}
+
+.teamButton {
+    display: inline;
+    padding: 12px 25px;
+    border: 1px solid #000;
+    background-color: #484848;
+    transition: all 200ms ease;
+    color: #ffffff;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 20px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 1px 1px #000;
+    text-transform: uppercase;
+}
+
+.frontPage {
+    height: calc(100vh - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-bottom: #000;
+}
+
+.text-container {
+    position: absolute;
+    text-align: center;
+    color: #000;
+    left: 50%;
+    /* Center text horizontally */
+    top: 50%;
+    /* Center text vertically */
+    transform: translate(-50%, -50%);
+    /* Center text both horizontally and vertically */
+    width: 100%;
+    /* Adjust width as needed */
+    background-color: transparent;
+}
+
+.frontPage-text {
+    font-size: 16px;
+    text-align: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    left: 50%;
+    top: 50%;
+    margin: 0;
+    color: #000;
+    line-height: 1.5;
+    font-family: 'Times New Roman', Times, serif;
+    /* Add spacing between sentences */
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.FrontPage-Background {
+    width: 100%;
+    /* Make the image width 100% of its container */
+    height: 100%;
+    /* Make the image height 100% of its container */
+    object-fit: cover;
+    /* Maintain aspect ratio and cover the entire container */
+    position: absolute;
+    /* Position the image within the section */
+    top: 0;
+    left: 0;
+    z-index: -1;
+    /* Place the image behind the text container */
+}
+
+/* below is for comparisonsPage*/
+
+/* below is for sourcesPage*/
+
+/* Update the container-2 styles to center its content */
+.container-2 {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    /* This will center content vertically */
+}
+
+.centered-heading {
+    font-size: 24px;
+    font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 20px;
+    padding-top: 50px;
+}
+
+.centered-subheading {
+    font-size: 16px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.w-slider-mask {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.team-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow team members to wrap to the next line if necessary */
+    justify-content: center;
+    /* Center the team members horizontally */
+}
+
+.team-slide-wrapper {
+    width: 283px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    /* Add some space between team members */
+}
+
+.team-block {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    max-width: 100%;
+    /* Make sure the card doesn't exceed the container width */
+}
+
+.team-member-image-two {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.team-block-info {
+    margin-top: 10px;
+}
+
+.team-member-name-two {
+    font-size: 18px;
+    font-family: 'Times New Roman', Times, serif;
+    margin: 5px 0;
+}
+
+.team-member-text {
+    font-size: 14px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Add or update styles for your footer */
+.footer {
+    background-color: black;
+    position: fixed;
+    bottom: 0;
+    /* Place the footer at the bottom of the viewport */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    height: 50px;
+}
+
+
+.footer-text {
+    color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+}
