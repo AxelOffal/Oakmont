@@ -168,8 +168,7 @@ def main():
     db.close()
     return returnsInflationFinal
 
+def return_inflation():
+    return main()
 
-if __name__ == "__main__":
-    inflation_result = main()
-    print(inflation_result)
 

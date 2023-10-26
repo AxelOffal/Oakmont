@@ -48,7 +48,7 @@ def update_db(name, sku, description, brand_name, url, expenditure_class, price)
         
         # Check if product already exists in the database
         select_product = """
-        SELECT id 
+        SELECT productID
         FROM products 
         WHERE names = %s AND description = %s AND url = %s
         """
