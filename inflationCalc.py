@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import mysql.connector
 from datetime import datetime, timedelta
-
+from decimal import Decimal
 
 
 class Database:
@@ -30,7 +30,7 @@ def fetch_product_data(db, e_class):
 def fetch_prices(db, productID, month, year):
     # This query fetches the first and last prices for a given product in a specified month and year
     query = """
-    SELECT Price_ID, price, timestamp
+    SELECT price, timestamp
     FROM prices
     WHERE productID = %s
     AND MONTH(timestamp) = %s AND YEAR(timestamp) = %s
@@ -38,7 +38,6 @@ def fetch_prices(db, productID, month, year):
     """
 
     results = db.execute_query(query, (productID, month, year))
-    print(results)
     # If no results are found, return None
     if not results:
         return None
@@ -48,11 +47,10 @@ def fetch_prices(db, productID, month, year):
         return None
 
     # If there's more than one result, then the first is the earliest and the last is the latest price
-    first_price_id, first_price, _ = results[0]
-    last_price_id, last_price, _ = results[-1]
-    print(f"First Price ID: {first_price_id}, First Price: {first_price}, Last Price ID: {last_price_id}, Last Price: {last_price}")
+    first_price, first_price_time = results[0]
+    last_price, last_price_time = results[-1]
 
-    return (first_price_id, first_price), (last_price_id, last_price)
+    return (first_price, first_price_time), (last_price, last_price_time)
 
 
 def fetch_class_weights(db, class_inflation_list):
@@ -68,7 +66,7 @@ def rescale_weights(class_weights):
     # Calculate the total sum of the weights
     total_weight = sum(weight for _, weight in class_weights)
     # Rescale the weights so they add up to 1
-    rescaled_weights = [(e_class, (weight / total_weight) / 100) for e_class, weight in class_weights]
+    rescaled_weights = [(e_class, (weight / total_weight)) for e_class, weight in class_weights]
     return rescaled_weights
 
 def calculate_weighted_inflation(class_inflation_list, rescaled_weights):
@@ -105,11 +103,15 @@ def process_class(db, e_class, month, year):
             print(f"No valid price data found for product {productID} ({names}).")
             continue
         # Unpack the results into separate variables
-        (past_price_id, past_price), (latest_price_id, latest_price) = result
-        
+        (past_price, past_price_time), (latest_price, latest_price_time) = result
+        days_difference = (latest_price_time - past_price_time).days
+        months_difference = days_difference/Decimal(30.0)
+        if months_difference == 0:
+            print(f"No valid price data found for product {productID} ({names}).")
+            continue
         if past_price != 0:
-            inflation = (latest_price - past_price) / past_price
-            print(f"Inflation for product {productID} ({names}): ({latest_price} - {past_price}) / {past_price} = {inflation * 100:.2f}%")
+            inflation = ((latest_price - past_price) / past_price)/ months_difference
+            print(f"Inflation for product {productID} ({names}): (({latest_price} - {past_price}) / {past_price}) {months_difference:.2f} = {inflation * 100:.2f}%")
             inflation_sum += inflation
             product_count += 1
         else:
@@ -132,12 +134,14 @@ def main():
     #current_date = datetime.strptime(latest_cpi_date, '%Y-%m-%d %H:%M:%S')
     current_month = latest_cpi_date.month + 1 
     current_year = latest_cpi_date.year
-    print(f"Latest Month: {current_month}, Latest Year: {current_year}")
     all_classes = fetch_unique_classes(db)
     # Iterate through classes and process data
     class_inflation_list = []
     for e_class in all_classes:
-        class_inflation_list.append(process_class(db, e_class[0], current_month, current_year))
+        class_inflation = process_class(db, e_class[0], current_month, current_year)
+        if class_inflation[1] !=0:
+            class_inflation_list.append(class_inflation)
+            
     class_weights = fetch_class_weights(db, class_inflation_list)
     
     rescaled_weights = rescale_weights(class_weights)
@@ -159,10 +163,10 @@ def main():
         print(f"CPI Inflation over the past 11 months: {cpi_inflation * 100:.2f}%")
     else:
         print("Past CPI value is zero, cannot calculate inflation.")
-    final_inflation = cpi_inflation + (overall_inflation * 4)
-
+    final_inflation = cpi_inflation + (overall_inflation)
+    returnsInflationFinal = (f"{final_inflation*100:.5F}%")
     db.close()
-    return final_inflation
+    return returnsInflationFinal
 
 
 if __name__ == "__main__":

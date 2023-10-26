@@ -45,16 +45,36 @@ def create_db_connection():
 def update_db(name, sku, description, brand_name, url, expenditure_class, price):
     try:
         cursor = connection.cursor()
-        insert_product = "INSERT INTO products (names, sku, description, brand_name, url, expenditure_class) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(
-            insert_product, (name, sku, description, brand_name, url, expenditure_class)
-        )
-        connection.commit()
+        
+        # Check if product already exists in the database
+        select_product = """
+        SELECT id 
+        FROM products 
+        WHERE names = %s AND description = %s AND url = %s
+        """
+        cursor.execute(select_product, (name, description, url))
+        existing_product = cursor.fetchone()
 
-        product_id = cursor.lastrowid
+        # If product does not exist, insert it into the products table
+        if not existing_product:
+            insert_product = """
+            INSERT INTO products (names, sku, description, brand_name, url, expenditure_class) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(
+                insert_product, (name, sku, description, brand_name, url, expenditure_class)
+            )
+            connection.commit()
+            product_id = cursor.lastrowid
+        else:
+            product_id = existing_product[0]
+            print(f"Product with name '{name}' and description '{description}' and URL '{url}' already exists with ID {product_id}. Not inserting again.")
+
+        # Insert price into the prices table
         insert_price = "INSERT INTO prices (productID, price) VALUES (%s, %s)"
         cursor.execute(insert_price, (product_id, price))
         connection.commit()
+
         print("Data successfully inserted into the database.")
     except mysql.connector.Error as err:
         print(f"MySQL error: {err}")
@@ -62,6 +82,7 @@ def update_db(name, sku, description, brand_name, url, expenditure_class, price)
         print(f"An error occurred: {e}")
     finally:
         cursor.close()
+
 
 
 # Call the functions and print the results
@@ -99,7 +120,7 @@ if __name__ == "__main__":
         description = apples_price[1]
         brand_name = "Coles"
         url = apples_url
-        expenditure_class = "Food"
+        expenditure_class = "Fruit"
 
         price = apples_price[0]
 
@@ -116,7 +137,7 @@ if __name__ == "__main__":
         description = bread_price[1]
         brand_name = "Coles"
         url = bread_url
-        expenditure_class = "Food"
+        expenditure_class = "Bread"
 
         price = bread_price[0]
 
@@ -133,7 +154,7 @@ if __name__ == "__main__":
         description = bananas_price[1]
         brand_name = "Coles"
         url = bananas_url
-        expenditure_class = "Food"
+        expenditure_class = "Fruit"
 
         price = bananas_price[0]
 
@@ -150,7 +171,7 @@ if __name__ == "__main__":
         description = chicken_price[1]
         brand_name = "Coles"
         url = chicken_url
-        expenditure_class = "Food"
+        expenditure_class = "Poultry"
 
         price = chicken_price[0]
 
@@ -167,7 +188,7 @@ if __name__ == "__main__":
         description = woolies_bread_price[1]
         brand_name = "Woolworths"
         url = woolies_bread_url
-        expenditure_class = "Food"
+        expenditure_class = "Bread"
 
         price = woolies_bread_price[0]
 
@@ -184,7 +205,7 @@ if __name__ == "__main__":
         description = woolies_apples_price[1]
         brand_name = "Woolworths"
         url = woolies_apples_url
-        expenditure_class = "Food"
+        expenditure_class = "Fruit"
 
         price = woolies_apples_price[0]
 
@@ -201,7 +222,7 @@ if __name__ == "__main__":
         description = woolies_bananas_price[1]
         brand_name = "Woolworths"
         url = woolies_bananas_url
-        expenditure_class = "Food"
+        expenditure_class = "Fruit"
 
         price = woolies_bananas_price[0]
 
@@ -218,7 +239,7 @@ if __name__ == "__main__":
         description = woolies_chicken_price[1]
         brand_name = "Woolworths"
         url = woolies_chicken_url
-        expenditure_class = "Food"
+        expenditure_class = "Poultry"
 
         price = woolies_chicken_price[0]
 
@@ -236,7 +257,7 @@ if __name__ == "__main__":
         description = "AIP Fuel Price"
         brand_name = "AIP"
         url = url
-        expenditure_class = "Transport"
+        expenditure_class = "Automotive fuel"
 
         price = aip_fuel_price
 
@@ -253,7 +274,7 @@ if __name__ == "__main__":
             description = "Housing Price"
             brand_name = "CoreLogic"
             url = url
-            expenditure_class = "Housing"
+            expenditure_class = "New dwelling purchase by owner-occupiers"
 
             price = item[1]
 
@@ -269,7 +290,7 @@ if __name__ == "__main__":
         description = "Jack Daniels Alcohol Price"
         brand_name = "mybottleshop.au"
         url = url
-        expenditure_class = "Alcohol"
+        expenditure_class = "Spirits"
 
         price = jack_daniels_price
 
@@ -287,7 +308,7 @@ if __name__ == "__main__":
         description = "Asahi Alcohol Price"
         brand_name = "mybottleshop.au"
         url = url
-        expenditure_class = "Alcohol"
+        expenditure_class = "Beer"
 
         price = asahi_price
 
