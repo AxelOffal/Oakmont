@@ -1,4 +1,0 @@
-https://www.abs.gov.au/about/data-services/application-programming-interfaces-apis/data-api-user-guide
-https://stackoverflow.com/questions/59979833/how-to-get-data-from-australia-bureau-of-statistics-using-pandasmdx
-https://pandasdmx.readthedocs.io/en/v1.0/sources.html#abs-australian-bureau-of-statistics
-https://pypi.org/project/ausdex/
