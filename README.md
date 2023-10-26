@@ -67,3 +67,32 @@ eg.
          scraper.getRBAInflation()
 
 If you have any issues with what is described above, talk to me (Andrew Still) about it and we can discuss changes.
+
+# Installation Instructions - Software
+1. download the software package using the download feature under the code dropdown in the upper right
+2. unzip the contents
+3. run powershell as administrator
+   a. navigate to the project ddirectory (i.e Oakmont-main)
+4. run the following command to enable permissions for running the setup installation requirements
+   a. powershell command: 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser'
+5. run the following command to enable installation of software dependancies
+   a. powershell command: '.\setup.ps1'
+6. Now, navigate to the services directory in the project structure in powershell
+   a. run the following commands
+      I. powershell command: '.\MyService.exe install'
+7. Open Task Scheduler
+   a. create a basic task and call it 'Inflation-Prediction'
+   b. schedule it to activate every 2 weeks on tuesday at whatever time you prefer
+   c. locate the automationController.exe file in the projects 'dist' directory
+   d. confirm the task
+8. Your software is now operational and functioning based on the timer.
+
+# Installation Instructions - Web Page
+1. Open the 'OakmontInflationPredictor' directory and copy the path to the 'api' directory
+2. Open a powershell terminal and navigate to the 'api' directory within 'OakmontInflationPredictor'
+3. run the following command once in the correct directory - 'python api/controller.py'
+4. In a new browser tab go to the local host address of '127.1.1.5000'
+5. The site will update on every refresh and is now accessible
+
+
+
